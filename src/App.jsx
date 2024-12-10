@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
-import login from './services/login'
 
 const LoginForm = (props) => {
   return (
@@ -25,7 +24,7 @@ const BlogsForm = (props) => {
   return (
     <div>
       <h2>blogs</h2>
-      <p>{props.user.name} logged in</p>
+      <p>{props.user.name} logged in <button onClick={props.handleLogout}>logout</button> </p>
       {props.blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
@@ -44,18 +43,35 @@ const App = () => {
     )  
   }, [])
 
+  useEffect(() => {
+    const loggedInUserJSON = window.localStorage.getItem('loggedBlogAppUser')
+    if (loggedInUserJSON) {
+      const user = JSON.parse(loggedInUserJSON)
+      setUser(user)
+      blogService.setToken(user.token)
+    }
+  }, [])
+
   const handleLogin = async (event) => {
     event.preventDefault()
 
     try {
       const user = await loginService.login({ username, password })
+      window.localStorage.setItem(
+        'loggedBlogAppUser', JSON.stringify(user)
+      ) 
       setUser(user)
       setUsername("")
       setPassword("")
-      console.log(user)
     } catch (exception) {
       window.alert("wrong password or username")
     }
+  }
+
+  const handleLogout = () => {
+    console.log('yeet')
+    window.localStorage.removeItem('loggedBlogAppUser')
+    setUser(null)
   }
 
   if (user === null) {
@@ -68,7 +84,7 @@ const App = () => {
 
   return (
     <div>
-      <BlogsForm blogs={blogs} user={user}/>
+      <BlogsForm blogs={blogs} user={user} handleLogout={handleLogout}/>
     </div>
   )
 }
