@@ -3,6 +3,49 @@ import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
+const LoggedInHeader = (props) => {
+  return (
+    <div>
+      <p>{props.user.name} logged in <button onClick={props.handleLogout}>logout</button> </p>
+    </div>
+  )
+}
+
+const AddBlogForm = (props) => {
+  return (
+    <div>
+      <h2>create new blog</h2>
+      <form onSubmit={props.handleAddingBlog}>
+        <div>
+          title: <input 
+            type="text"
+            name="title"
+            value={props.title}
+            onChange={({ target }) => props.setTitle(target.value)}
+          />
+        </div>
+        <div>
+          author: <input 
+            type='text'
+            name='author'
+            value={props.author}
+            onChange={({ target }) => props.setAuthor(target.value)}
+          />
+        </div>
+        <div>
+          url: <input
+            type='text'
+            name='url'
+            value={props.url}
+            onChange={({ target }) => props.setUrl(target.value)}
+          />
+        </div>
+        <button type='submit'>add</button>
+      </form>
+    </div>
+  )
+}
+
 const LoginForm = (props) => {
   return (
     <div>
@@ -24,7 +67,6 @@ const BlogsForm = (props) => {
   return (
     <div>
       <h2>blogs</h2>
-      <p>{props.user.name} logged in <button onClick={props.handleLogout}>logout</button> </p>
       {props.blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
@@ -36,6 +78,9 @@ const App = () => {
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('') 
   const [user, setUser] = useState(null)
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -59,7 +104,8 @@ const App = () => {
       const user = await loginService.login({ username, password })
       window.localStorage.setItem(
         'loggedBlogAppUser', JSON.stringify(user)
-      ) 
+      )
+      blogService.setToken(user.token)
       setUser(user)
       setUsername("")
       setPassword("")
@@ -69,9 +115,29 @@ const App = () => {
   }
 
   const handleLogout = () => {
-    console.log('yeet')
     window.localStorage.removeItem('loggedBlogAppUser')
     setUser(null)
+  }
+
+  const handleAddingBlog = async (event) => {
+    event.preventDefault()
+
+    try {
+      const newBlog = {
+        title: title,
+        author: author,
+        url: url
+      }
+      await blogService.addBlog(newBlog)
+      const blogs = await blogService.getAll()
+      setBlogs(blogs)
+      setTitle('')
+      setAuthor('')
+      setUrl('')
+      window.alert("Added new blog succesfully!")
+    } catch (exception) {
+      window.alert("Adding new blog failed.")
+    }
   }
 
   if (user === null) {
@@ -84,7 +150,22 @@ const App = () => {
 
   return (
     <div>
-      <BlogsForm blogs={blogs} user={user} handleLogout={handleLogout}/>
+      <LoggedInHeader
+        user={user}
+        handleLogout={handleLogout}
+      />
+      <BlogsForm
+        blogs={blogs}
+      />
+      <AddBlogForm 
+        title={title}
+        url={url}
+        author={author}
+        setAuthor={setAuthor}
+        setUrl={setUrl}
+        setTitle={setTitle}
+        handleAddingBlog={handleAddingBlog}
+      />
     </div>
   )
 }
