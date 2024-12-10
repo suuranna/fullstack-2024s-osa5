@@ -3,6 +3,20 @@ import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
+const Notification = ({ message }) => {
+  if (message.text === null) {
+    return null
+  }
+
+  const style = message.type==='error' ? 'error' : 'confirm'
+
+  return (
+    <div className={style}>
+      {message.text}
+    </div>
+  )
+}
+
 const LoggedInHeader = (props) => {
   return (
     <div>
@@ -81,6 +95,7 @@ const App = () => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
+  const [message, setMessage] = useState({ text: null, type: 'error'})
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -109,14 +124,27 @@ const App = () => {
       setUser(user)
       setUsername("")
       setPassword("")
+      setMessage({text: `Logged in succesfully! Welcome to blogapp, ${user.name}`, type: 'confirm'})
+      setTimeout(() => {
+        setMessage({text: null, type: 'error'})
+      }, 5000)
     } catch (exception) {
-      window.alert("wrong password or username")
+      setMessage({text: 'Wrong username or password', type: 'error'})
+      setTimeout(() => {
+        setMessage({text: null, type: 'error'})
+      }, 5000)
     }
   }
 
   const handleLogout = () => {
+    const usersName = user.name
     window.localStorage.removeItem('loggedBlogAppUser')
     setUser(null)
+
+    setMessage({text: `Logged out succesfully! Bye bye, ${usersName}!`, type: 'confirm'})
+    setTimeout(() => {
+      setMessage({text: null, type: 'error'})
+    }, 5000)
   }
 
   const handleAddingBlog = async (event) => {
@@ -134,15 +162,22 @@ const App = () => {
       setTitle('')
       setAuthor('')
       setUrl('')
-      window.alert("Added new blog succesfully!")
+      setMessage({text: `${title} by ${author} added`, type: 'confirm'})
+      setTimeout(() => {
+        setMessage({text: null, type: 'error'})
+      }, 5000)
     } catch (exception) {
-      window.alert("Adding new blog failed.")
+      setMessage({text: 'Blog must have a title, author and url', type: 'error'})
+      setTimeout(() => {
+        setMessage({text: null, type: 'error'})
+      }, 5000)
     }
   }
 
   if (user === null) {
     return (
       <div>
+        <Notification message={message} />
         <LoginForm username={username} password={password} setPassword={setPassword} setUsername={setUsername} handleLogin={handleLogin} />
       </div>
     )
@@ -154,6 +189,7 @@ const App = () => {
         user={user}
         handleLogout={handleLogout}
       />
+      <Notification message={message} />
       <BlogsForm
         blogs={blogs}
       />
