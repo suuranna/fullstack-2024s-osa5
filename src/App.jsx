@@ -1,7 +1,36 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+
+const Togglable = forwardRef((props, ref) => {
+  const [visible, setVisible] = useState(false)
+
+  const hideWhenVisible = { display: visible ? 'none' : '' }
+  const showWhenVisible = { display: visible ? '' : 'none' }
+
+  const toggleVisibility = () => {
+    setVisible(!visible)
+  }
+
+  useImperativeHandle(ref, () => {
+    return {
+      toggleVisibility
+    }
+  })
+
+  return (
+    <div>
+      <div style={hideWhenVisible}>
+        <button onClick={toggleVisibility}>{props.buttonLabel}</button>
+      </div>
+      <div style={showWhenVisible}>
+        {props.children}
+        <button onClick={toggleVisibility}>hide</button>
+      </div>
+    </div>
+  )
+})
 
 const Notification = ({ message }) => {
   if (message.text === null) {
@@ -97,6 +126,8 @@ const App = () => {
   const [url, setUrl] = useState('')
   const [message, setMessage] = useState({ text: null, type: 'error'})
 
+  const addBlogFormRef = useRef()
+
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
@@ -162,6 +193,7 @@ const App = () => {
       setTitle('')
       setAuthor('')
       setUrl('')
+      addBlogFormRef.current.toggleVisibility()
       setMessage({text: `${title} by ${author} added`, type: 'confirm'})
       setTimeout(() => {
         setMessage({text: null, type: 'error'})
@@ -193,15 +225,17 @@ const App = () => {
       <BlogsForm
         blogs={blogs}
       />
-      <AddBlogForm 
-        title={title}
-        url={url}
-        author={author}
-        setAuthor={setAuthor}
-        setUrl={setUrl}
-        setTitle={setTitle}
-        handleAddingBlog={handleAddingBlog}
-      />
+      <Togglable buttonLabel={'new note'} ref={addBlogFormRef} >
+        <AddBlogForm 
+          title={title}
+          url={url}
+          author={author}
+          setAuthor={setAuthor}
+          setUrl={setUrl}
+          setTitle={setTitle}
+          handleAddingBlog={handleAddingBlog}
+        />
+      </Togglable>
     </div>
   )
 }
