@@ -1,129 +1,18 @@
-import { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react'
-import Blog from './components/Blog'
+import { useState, useEffect, useRef } from 'react'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import AddBlogForm from './components/AddBlogForm'
+import Togglable from './components/Togglable'
+import Notification from './components/Notification'
+import LoggedInHeader from './components/LoggedInHeader'
+import LoginForm from './components/LoginForm'
+import BlogsForm from './components/BlogsForm'
 
-const Togglable = forwardRef((props, ref) => {
-  const [visible, setVisible] = useState(false)
-
-  const hideWhenVisible = { display: visible ? 'none' : '' }
-  const showWhenVisible = { display: visible ? '' : 'none' }
-
-  const toggleVisibility = () => {
-    setVisible(!visible)
-  }
-
-  useImperativeHandle(ref, () => {
-    return {
-      toggleVisibility
-    }
-  })
-
-  return (
-    <div>
-      <div style={hideWhenVisible}>
-        <button onClick={toggleVisibility}>{props.buttonLabel}</button>
-      </div>
-      <div style={showWhenVisible}>
-        {props.children}
-        <button onClick={toggleVisibility}>hide</button>
-      </div>
-    </div>
-  )
-})
-
-const Notification = ({ message }) => {
-  if (message.text === null) {
-    return null
-  }
-
-  const style = message.type==='error' ? 'error' : 'confirm'
-
-  return (
-    <div className={style}>
-      {message.text}
-    </div>
-  )
-}
-
-const LoggedInHeader = (props) => {
-  return (
-    <div>
-      <p>{props.user.name} logged in <button onClick={props.handleLogout}>logout</button> </p>
-    </div>
-  )
-}
-
-const AddBlogForm = (props) => {
-  return (
-    <div>
-      <h2>create new blog</h2>
-      <form onSubmit={props.handleAddingBlog}>
-        <div>
-          title: <input 
-            type="text"
-            name="title"
-            value={props.title}
-            onChange={({ target }) => props.setTitle(target.value)}
-          />
-        </div>
-        <div>
-          author: <input 
-            type='text'
-            name='author'
-            value={props.author}
-            onChange={({ target }) => props.setAuthor(target.value)}
-          />
-        </div>
-        <div>
-          url: <input
-            type='text'
-            name='url'
-            value={props.url}
-            onChange={({ target }) => props.setUrl(target.value)}
-          />
-        </div>
-        <button type='submit'>add</button>
-      </form>
-    </div>
-  )
-}
-
-const LoginForm = (props) => {
-  return (
-    <div>
-      <h2>log in to application</h2>
-      <form onSubmit={props.handleLogin}>
-        <div>
-          username: <input type="text" value={props.username} name="username" onChange={({ target }) => props.setUsername(target.value)} />
-        </div>
-        <div>
-          password: <input type="password" value={props.password} name="password" onChange={({ target }) => props.setPassword(target.value)} />
-        </div>
-        <button type="submit">login</button>
-      </form>
-    </div>
-  )
-}
-
-const BlogsForm = (props) => {
-  return (
-    <div>
-      <h2>blogs</h2>
-      {props.blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
-      )}
-    </div>
-  )
-}
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('') 
   const [user, setUser] = useState(null)
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
   const [message, setMessage] = useState({ text: null, type: 'error'})
 
   const addBlogFormRef = useRef()
@@ -178,22 +67,16 @@ const App = () => {
     }, 5000)
   }
 
-  const handleAddingBlog = async (event) => {
-    event.preventDefault()
-
+  const addBlog = async (blogObject) => {
     try {
-      const newBlog = {
-        title: title,
-        author: author,
-        url: url
-      }
-      await blogService.addBlog(newBlog)
+      await blogService.addBlog(blogObject)
       const blogs = await blogService.getAll()
       setBlogs(blogs)
-      setTitle('')
-      setAuthor('')
-      setUrl('')
       addBlogFormRef.current.toggleVisibility()
+
+      const title = blogs[blogs.length - 1].title
+      const author = blogs[blogs.length - 1].author
+
       setMessage({text: `${title} by ${author} added`, type: 'confirm'})
       setTimeout(() => {
         setMessage({text: null, type: 'error'})
@@ -227,13 +110,7 @@ const App = () => {
       />
       <Togglable buttonLabel={'new note'} ref={addBlogFormRef} >
         <AddBlogForm 
-          title={title}
-          url={url}
-          author={author}
-          setAuthor={setAuthor}
-          setUrl={setUrl}
-          setTitle={setTitle}
-          handleAddingBlog={handleAddingBlog}
+          createBlog={addBlog}
         />
       </Togglable>
     </div>
