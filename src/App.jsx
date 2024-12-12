@@ -89,6 +89,21 @@ const App = () => {
     }
   }
 
+  const handleLiking = async (blogObject) => {
+    event.preventDefault()
+
+    try {
+      await blogService.updateBlogLikes(blogObject)
+      const blogs = await blogService.getAll()
+      setBlogs(blogs)
+    } catch (exception) {
+      setMessage({text: 'Something went wrong when liking a blog', type: 'error'})
+      setTimeout(() => {
+        setMessage({text: null, type: 'error'})
+      }, 5000)
+    }
+  }
+
   if (user === null) {
     return (
       <div>
@@ -107,6 +122,7 @@ const App = () => {
       <Notification message={message} />
       <BlogsForm
         blogs={blogs}
+        handleLiking={handleLiking}
       />
       <Togglable buttonLabel={'new note'} ref={addBlogFormRef} >
         <AddBlogForm 

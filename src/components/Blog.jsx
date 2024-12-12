@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, handleLiking }) => {
   const [viewMore, setViewMore] = useState(false)
 
   const hideWhenVisible = { display: viewMore? 'none' : '' }
@@ -18,7 +18,7 @@ const Blog = ({ blog }) => {
       <div style={showWhenVisible}>
         {blog.title} by {blog.author} <br/>
         {blog.url} <br/>
-        likes: {blog.likes} <button>like</button> <br/>
+        likes: {blog.likes} <button onClick={() => handleLiking(blog)}>like</button> <br/>
         {blog.user.name} <br/>
         <button onClick={changeViewMore}>hide</button>
       </div>
