@@ -10,17 +10,17 @@ import BlogsForm from './components/BlogsForm'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('') 
-  const [password, setPassword] = useState('') 
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [message, setMessage] = useState({ text: null, type: 'error'})
+  const [message, setMessage] = useState({ text: null, type: 'error' })
 
   const addBlogFormRef = useRef()
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
-    )  
+    )
   }, [])
 
   useEffect(() => {
@@ -42,16 +42,16 @@ const App = () => {
       )
       blogService.setToken(user.token)
       setUser(user)
-      setUsername("")
-      setPassword("")
-      setMessage({text: `Logged in succesfully! Welcome to blogapp, ${user.name}`, type: 'confirm'})
+      setUsername('')
+      setPassword('')
+      setMessage({ text: `Logged in succesfully! Welcome to blogapp, ${user.name}`, type: 'confirm' })
       setTimeout(() => {
-        setMessage({text: null, type: 'error'})
+        setMessage({ text: null, type: 'error' })
       }, 5000)
     } catch (exception) {
-      setMessage({text: 'Wrong username or password', type: 'error'})
+      setMessage({ text: 'Wrong username or password', type: 'error' })
       setTimeout(() => {
-        setMessage({text: null, type: 'error'})
+        setMessage({ text: null, type: 'error' })
       }, 5000)
     }
   }
@@ -61,9 +61,9 @@ const App = () => {
     window.localStorage.removeItem('loggedBlogAppUser')
     setUser(null)
 
-    setMessage({text: `Logged out succesfully! Bye bye, ${usersName}!`, type: 'confirm'})
+    setMessage({ text: `Logged out succesfully! Bye bye, ${usersName}!`, type: 'confirm' })
     setTimeout(() => {
-      setMessage({text: null, type: 'error'})
+      setMessage({ text: null, type: 'error' })
     }, 5000)
   }
 
@@ -77,14 +77,14 @@ const App = () => {
       const title = blogs[blogs.length - 1].title
       const author = blogs[blogs.length - 1].author
 
-      setMessage({text: `${title} by ${author} added`, type: 'confirm'})
+      setMessage({ text: `${title} by ${author} added`, type: 'confirm' })
       setTimeout(() => {
-        setMessage({text: null, type: 'error'})
+        setMessage({ text: null, type: 'error' })
       }, 5000)
     } catch (exception) {
-      setMessage({text: 'Blog must have a title, author and url', type: 'error'})
+      setMessage({ text: 'Blog must have a title, author and url', type: 'error' })
       setTimeout(() => {
-        setMessage({text: null, type: 'error'})
+        setMessage({ text: null, type: 'error' })
       }, 5000)
     }
   }
@@ -95,9 +95,9 @@ const App = () => {
       const blogs = await blogService.getAll()
       setBlogs(blogs)
     } catch (exception) {
-      setMessage({text: 'Something went wrong when liking a blog', type: 'error'})
+      setMessage({ text: 'Something went wrong when liking a blog', type: 'error' })
       setTimeout(() => {
-        setMessage({text: null, type: 'error'})
+        setMessage({ text: null, type: 'error' })
       }, 5000)
     }
   }
@@ -108,15 +108,15 @@ const App = () => {
       const blogs = await blogService.getAll()
       setBlogs(blogs)
       if (window.confirm(`Remove blog ${blogObject.title} by ${blogObject.author}?`)) {
-        setMessage({text: `${blogObject.title} by ${blogObject.author} removed!`, type: 'confirm'})
+        setMessage({ text: `${blogObject.title} by ${blogObject.author} removed!`, type: 'confirm' })
         setTimeout(() => {
-          setMessage({text: null, type: 'error'})
+          setMessage({ text: null, type: 'error' })
         }, 5000)
       }
     } catch (exception) {
-      setMessage({text: `Unable to remove blog ${blogObject.title} by ${blogObject.author}`, type: 'error'})
+      setMessage({ text: `Unable to remove blog ${blogObject.title} by ${blogObject.author}`, type: 'error' })
       setTimeout(() => {
-        setMessage({text: null, type: 'error'})
+        setMessage({ text: null, type: 'error' })
       }, 5000)
     }
   }
@@ -144,7 +144,7 @@ const App = () => {
         user={user}
       />
       <Togglable buttonLabel={'new note'} ref={addBlogFormRef} >
-        <AddBlogForm 
+        <AddBlogForm
           createBlog={addBlog}
         />
       </Togglable>
