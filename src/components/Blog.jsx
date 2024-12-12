@@ -13,14 +13,22 @@ const Blog = ({ blog, handleLiking, user, handleRemovingBlog }) => {
 
   return (
     <div className="blogStyle">
-      <div style={hideWhenViewMore}>
+      <div style={hideWhenViewMore} className='onlyTitleAndAuthor'>
         {blog.title} by {blog.author} <button onClick={changeViewMore}>view</button>
       </div>
-      <div style={showWhenViewMore}>
-        {blog.title} by {blog.author} <button onClick={changeViewMore}>hide</button> <br/>
-        {blog.url} <br/>
-        likes: {blog.likes} <button onClick={() => handleLiking(blog)}>like</button> <br/>
-        {blog.user.name} <br/>
+      <div style={showWhenViewMore} className='moreSpecificInfo'>
+        <div>
+        {blog.title} by {blog.author} <button onClick={changeViewMore}>hide</button>
+        </div>
+        <div className='url'>
+          {blog.url}
+        </div>
+        <div>
+          likes: {blog.likes} <button onClick={() => handleLiking(blog)}>like</button>
+        </div>
+        <div>
+          {blog.user.name} 
+        </div>
         <div style={showRemoveButton}>
           <button onClick={() => handleRemovingBlog(blog)}>remove</button>
         </div>
