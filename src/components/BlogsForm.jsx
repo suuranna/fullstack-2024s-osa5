@@ -6,7 +6,7 @@ const BlogsForm = (props) => {
     <div>
       <h2>blogs</h2>
       {sortedBlogs.map(blog =>
-        <Blog key={blog.id} blog={blog} handleLiking={props.handleLiking} />
+        <Blog key={blog.id} blog={blog} handleLiking={props.handleLiking} user={props.user} handleRemovingBlog={props.handleRemovingBlog} />
       )}
     </div>
   )

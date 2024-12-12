@@ -90,14 +90,31 @@ const App = () => {
   }
 
   const handleLiking = async (blogObject) => {
-    event.preventDefault()
-
     try {
       await blogService.updateBlogLikes(blogObject)
       const blogs = await blogService.getAll()
       setBlogs(blogs)
     } catch (exception) {
       setMessage({text: 'Something went wrong when liking a blog', type: 'error'})
+      setTimeout(() => {
+        setMessage({text: null, type: 'error'})
+      }, 5000)
+    }
+  }
+
+  const handleRemovingBlog = async (blogObject) => {
+    try {
+      await blogService.removeBlog(blogObject.id)
+      const blogs = await blogService.getAll()
+      setBlogs(blogs)
+      if (window.confirm(`Remove blog ${blogObject.title} by ${blogObject.author}?`)) {
+        setMessage({text: `${blogObject.title} by ${blogObject.author} removed!`, type: 'confirm'})
+        setTimeout(() => {
+          setMessage({text: null, type: 'error'})
+        }, 5000)
+      }
+    } catch (exception) {
+      setMessage({text: `Unable to remove blog ${blogObject.title} by ${blogObject.author}`, type: 'error'})
       setTimeout(() => {
         setMessage({text: null, type: 'error'})
       }, 5000)
@@ -123,6 +140,8 @@ const App = () => {
       <BlogsForm
         blogs={blogs}
         handleLiking={handleLiking}
+        handleRemovingBlog={handleRemovingBlog}
+        user={user}
       />
       <Togglable buttonLabel={'new note'} ref={addBlogFormRef} >
         <AddBlogForm 

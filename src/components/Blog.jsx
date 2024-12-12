@@ -1,10 +1,10 @@
 import { useState } from "react"
 
-const Blog = ({ blog, handleLiking }) => {
+const Blog = ({ blog, handleLiking, user, handleRemovingBlog }) => {
   const [viewMore, setViewMore] = useState(false)
-
-  const hideWhenVisible = { display: viewMore? 'none' : '' }
-  const showWhenVisible = { display: viewMore ? '' : 'none' }
+  const hideWhenViewMore = { display: viewMore ? 'none' : '' }
+  const showWhenViewMore = { display: viewMore ? '' : 'none' }
+  const showRemoveButton = { display: user.user_id === blog.user.id ? '' : 'none' }
 
   const changeViewMore = () => {
     setViewMore(!viewMore)
@@ -12,15 +12,17 @@ const Blog = ({ blog, handleLiking }) => {
 
   return (
     <div className="blogStyle">
-      <div style={hideWhenVisible}>
-        {blog.title} {blog.author} <button onClick={changeViewMore}>view</button>
+      <div style={hideWhenViewMore}>
+        {blog.title} by {blog.author} <button onClick={changeViewMore}>view</button>
       </div>
-      <div style={showWhenVisible}>
-        {blog.title} by {blog.author} <br/>
+      <div style={showWhenViewMore}>
+        {blog.title} by {blog.author} <button onClick={changeViewMore}>hide</button> <br/>
         {blog.url} <br/>
         likes: {blog.likes} <button onClick={() => handleLiking(blog)}>like</button> <br/>
         {blog.user.name} <br/>
-        <button onClick={changeViewMore}>hide</button>
+        <div style={showRemoveButton}>
+          <button onClick={() => handleRemovingBlog(blog)}>remove</button>
+        </div>
       </div>
     </div>
   )
