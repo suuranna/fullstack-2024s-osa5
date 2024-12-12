@@ -50,4 +50,21 @@ describe('Blog', () => {
     expect(div).toHaveTextContent('likes: 666')
     expect(div).toHaveTextContent('Susu Käkä')
   })
+
+  test('when pressing the like-button, the handler will be called twice', async () => {
+    const mockHandleLiking = vi.fn()
+    const mockHandleRemoving = vi.fn()
+
+    container = render(<Blog blog={blog} handleLiking={mockHandleLiking} handleRemovingBlog={mockHandleRemoving} user={user} />).container
+
+    const clickerUser = userEvent.setup()
+    const viewButton = screen.getByText('view')
+    await clickerUser.click(viewButton)
+    const likeButton = screen.getByText('like')
+    expect(mockHandleLiking.mock.calls).toHaveLength(0)
+    await clickerUser.click(likeButton)
+    await clickerUser.click(likeButton)
+
+    expect(mockHandleLiking.mock.calls).toHaveLength(2)
+  })
 })
