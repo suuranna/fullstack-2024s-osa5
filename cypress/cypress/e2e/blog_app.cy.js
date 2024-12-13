@@ -59,5 +59,40 @@ describe('Blog app', function() {
       cy.wait(6000)
       cy.contains('Otsikko by Kirjoittaja')
     })
+
+    describe('when one blog is added', function() {
+      beforeEach(function() {
+        const info = JSON.parse(localStorage.getItem('loggedBlogAppUser'))
+        const id = info.user_id
+        const token = info.token
+        console.log(id, token)
+        const config = { headers: { Authorization: token } }
+
+        const blog = {
+          title: "Hyvä otsikko",
+          author: "Huono kirjoittaja",
+          url: "www.tamaonurl.com",
+          user: {username: 'Maijalainen', name: 'Maija Meikäläinen', id: id}
+        }
+        cy.request({
+          url: 'http://localhost:3003/api/blogs/',
+          method: 'POST',
+          body: blog,
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+        cy.visit('http://localhost:5173')
+      })
+
+      it.only('a blog can be liked', function() {
+        cy.contains('Hyvä otsikko by Huono kirjoittaja')
+        cy.contains('view').click()
+        cy.contains('likes: 0')
+        cy.contains('like').click()
+        cy.contains('like').click()
+        cy.contains('likes: 2')
+      })
+    })
   })
 })
