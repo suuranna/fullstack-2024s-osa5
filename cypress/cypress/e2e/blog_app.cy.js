@@ -35,4 +35,29 @@ describe('Blog app', function() {
       cy.contains('Wrong username or password')
     })
   })
+
+  describe('When logged in', function() {
+    beforeEach(function() {
+      const user = {
+        username: 'Maijalainen',
+        password: 'salasana'
+      }
+      cy.request('POST', 'http://localhost:3003/api/login/', user).then(response => {
+        localStorage.setItem('loggedBlogAppUser', JSON.stringify(response.body))
+        cy.visit('http://localhost:5173')
+      })
+    })
+
+    it('A blog can be created', function() {
+      cy.contains('blogs')
+      cy.contains('new note').click()
+      cy.get('#title').type('Otsikko')
+      cy.get('#author').type('Kirjoittaja')
+      cy.get('#url').type('www.url.fi')
+      cy.get('#add-button').click()
+      cy.contains('Otsikko by Kirjoittaja added')
+      cy.wait(6000)
+      cy.contains('Otsikko by Kirjoittaja')
+    })
+  })
 })
