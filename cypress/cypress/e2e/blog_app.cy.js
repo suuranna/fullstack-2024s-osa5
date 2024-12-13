@@ -1,10 +1,16 @@
 describe('Blog app', function() {
   beforeEach(function() {
     cy.request('POST', 'http://localhost:3003/api/testing/reset')
-    const user = {
+    let user = {
       name: 'Maija Meikäläinen',
       username: 'Maijalainen',
       password: 'salasana'
+    }
+    cy.request('POST', 'http://localhost:3003/api/users/', user)
+    user = {
+      name: 'Matti Meikäläinen',
+      username: 'Mattimaa',
+      password: 'sanasala'
     }
     cy.request('POST', 'http://localhost:3003/api/users/', user)
     cy.visit('http://localhost:5173')
@@ -65,8 +71,6 @@ describe('Blog app', function() {
         const info = JSON.parse(localStorage.getItem('loggedBlogAppUser'))
         const id = info.user_id
         const token = info.token
-        console.log(id, token)
-        const config = { headers: { Authorization: token } }
 
         const blog = {
           title: "Hyvä otsikko",
@@ -84,14 +88,64 @@ describe('Blog app', function() {
         })
         cy.visit('http://localhost:5173')
       })
-
-      it.only('a blog can be liked', function() {
+      
+      it('a blog can be liked', function() {
         cy.contains('Hyvä otsikko by Huono kirjoittaja')
         cy.contains('view').click()
         cy.contains('likes: 0')
         cy.contains('like').click()
         cy.contains('like').click()
         cy.contains('likes: 2')
+      })
+
+      describe('when two users have added blogs', function() {
+        beforeEach(function() {
+          localStorage.clear()
+          cy.visit('http://localhost:5173')
+          
+          cy.request('POST', 'http://localhost:3003/api/login/', { username: 'Mattimaa', password: 'sanasala' }).then(response => {
+            localStorage.setItem('loggedBlogAppUser', JSON.stringify(response.body))
+            cy.visit('http://localhost:5173')
+            const info = JSON.parse(localStorage.getItem('loggedBlogAppUser'))
+            const id = info.user_id
+            const token = info.token
+    
+            const blog = {
+              title: "Huono otsikko",
+              author: "Okei kirjoittaja",
+              url: "www.tamaeioleurl.com",
+              user: {username: 'Mattimaa', name: 'Matti Meikäläinen', id: id}
+            }
+            cy.request({
+              url: 'http://localhost:3003/api/blogs/',
+              method: 'POST',
+              body: blog,
+              headers: {
+                'Authorization': `Bearer ${token}`
+              }
+            })
+            localStorage.clear()
+            cy.visit('http://localhost:5173')
+            const user = {
+              username: 'Maijalainen',
+              password: 'salasana'
+            }
+            cy.request('POST', 'http://localhost:3003/api/login/', user).then(response => {
+              localStorage.setItem('loggedBlogAppUser', JSON.stringify(response.body))
+              cy.visit('http://localhost:5173')
+            })
+          })
+        })
+
+        it('a blog can be removed by the person who added it and remove-button is only visible to them', function() {
+          cy.visit('http://localhost:5173')
+          cy.wait(1000)
+          cy.contains('Hyvä otsikko by Huono kirjoittaja').contains('view').click()
+          cy.get('button').contains('remove').click()
+          cy.contains('Hyvä otsikko by Huono kirjoittaja removed!')
+          cy.contains('Huono otsikko by Okei kirjoittaja').contains('view').click()
+          cy.get('button').get('remove').should('not.exist')
+        })
       })
     })
   })
