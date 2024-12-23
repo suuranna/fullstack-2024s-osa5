@@ -9,14 +9,18 @@ describe('Blog', () => {
     author: 'Kirjoittaja',
     url: 'www.url.fi',
     likes: 666,
-    user: {username: 'SuperKäyttäjä', name: 'Susu Käkä', id: '6750f8390a565ebfa988aade'}
+    user: {
+      username: 'SuperKäyttäjä',
+      name: 'Susu Käkä',
+      id: '6750f8390a565ebfa988aade',
+    },
   }
   const user = {
-    token: 'hsdjnjkjncklqejfl', 
-    username: 'SuperKäyttäjä', 
-    name: 'Susu Käkä', 
-    user_id: '6750f8390a565ebfa988aade'
-  }  
+    token: 'hsdjnjkjncklqejfl',
+    username: 'SuperKäyttäjä',
+    name: 'Susu Käkä',
+    user_id: '6750f8390a565ebfa988aade',
+  }
 
   let container
 
@@ -24,7 +28,14 @@ describe('Blog', () => {
     const mockHandleLiking = vi.fn()
     const mockHandleRemoving = vi.fn()
 
-    container = render(<Blog blog={blog} handleLiking={mockHandleLiking} handleRemovingBlog={mockHandleRemoving} user={user} />).container
+    container = render(
+      <Blog
+        blog={blog}
+        handleLiking={mockHandleLiking}
+        handleRemovingBlog={mockHandleRemoving}
+        user={user}
+      />
+    ).container
 
     let div = container.querySelector('.onlyTitleAndAuthor')
     expect(div).toHaveTextContent('Otsikko by Kirjoittaja')
@@ -38,7 +49,14 @@ describe('Blog', () => {
     const mockHandleLiking = vi.fn()
     const mockHandleRemoving = vi.fn()
 
-    container = render(<Blog blog={blog} handleLiking={mockHandleLiking} handleRemovingBlog={mockHandleRemoving} user={user} />).container
+    container = render(
+      <Blog
+        blog={blog}
+        handleLiking={mockHandleLiking}
+        handleRemovingBlog={mockHandleRemoving}
+        user={user}
+      />
+    ).container
 
     const clickerUser = userEvent.setup()
     const viewButton = screen.getByText('view')
@@ -55,7 +73,14 @@ describe('Blog', () => {
     const mockHandleLiking = vi.fn()
     const mockHandleRemoving = vi.fn()
 
-    container = render(<Blog blog={blog} handleLiking={mockHandleLiking} handleRemovingBlog={mockHandleRemoving} user={user} />).container
+    container = render(
+      <Blog
+        blog={blog}
+        handleLiking={mockHandleLiking}
+        handleRemovingBlog={mockHandleRemoving}
+        user={user}
+      />
+    ).container
 
     const clickerUser = userEvent.setup()
     const viewButton = screen.getByText('view')

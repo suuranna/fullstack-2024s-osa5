@@ -6,23 +6,28 @@ const LoginForm = (props) => {
       <h2>log in to application</h2>
       <form onSubmit={props.handleLogin}>
         <div>
-          username: <input 
+          username:{' '}
+          <input
             type="text"
-            id='username'
+            id="username"
             value={props.username}
             name="username"
             onChange={({ target }) => props.setUsername(target.value)}
           />
         </div>
         <div>
-          password: <input
+          password:{' '}
+          <input
             type="password"
-            id='password'
+            id="password"
             value={props.password}
-            name="password" onChange={({ target }) => props.setPassword(target.value)}
+            name="password"
+            onChange={({ target }) => props.setPassword(target.value)}
           />
         </div>
-        <button type="submit" id='login-button'>login</button>
+        <button type="submit" id="login-button">
+          login
+        </button>
       </form>
     </div>
   )
@@ -33,7 +38,7 @@ LoginForm.propTypes = {
   setPassword: PropTypes.func.isRequired,
   setUsername: PropTypes.func.isRequired,
   username: PropTypes.string.isRequired,
-  password: PropTypes.string.isRequired
+  password: PropTypes.string.isRequired,
 }
 
 export default LoginForm

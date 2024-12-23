@@ -5,17 +5,13 @@ const Notification = ({ message }) => {
     return null
   }
 
-  const style = message.type==='error' ? 'error' : 'confirm'
+  const style = message.type === 'error' ? 'error' : 'confirm'
 
-  return (
-    <div className={style}>
-      {message.text}
-    </div>
-  )
+  return <div className={style}>{message.text}</div>
 }
 
 Notification.propTypes = {
-  message: PropTypes.object.isRequired
+  message: PropTypes.object.isRequired,
 }
 
 export default Notification
