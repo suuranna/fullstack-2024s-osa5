@@ -9,9 +9,10 @@ import LoginForm from './components/LoginForm'
 import BlogsForm from './components/BlogsForm'
 import { useDispatch } from 'react-redux'
 import { setNotification } from './reducers/notificationReducer'
+import { initializeBlogs, createBlog } from './reducers/blogsReducer'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
+  //const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -21,8 +22,9 @@ const App = () => {
   const addBlogFormRef = useRef()
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs))
-  }, [])
+    //blogService.getAll().then((blogs) => setBlogs(blogs))
+    dispatch(initializeBlogs())
+  }, [dispatch])
 
   useEffect(() => {
     const loggedInUserJSON = window.localStorage.getItem('loggedBlogAppUser')
@@ -63,11 +65,12 @@ const App = () => {
     }))
   }
 
-  const addBlog = async (blogObject) => {
+  /*const addBlog = async (blogObject) => {
     try {
-      await blogService.addBlog(blogObject)
-      const blogs = await blogService.getAll()
-      setBlogs(blogs)
+      //await blogService.addBlog(blogObject)
+      //const blogs = await blogService.getAll()
+      //setBlogs(blogs)
+      createBlog(blogObject)
       addBlogFormRef.current.toggleVisibility()
 
       const title = blogs[blogs.length - 1].title
@@ -80,6 +83,10 @@ const App = () => {
         type: 'error',
       }))
     }
+  }*/
+
+  const changeAddBlogFormsVisibility = () => {
+    addBlogFormRef.current.toggleVisibility()
   }
 
   const handleLiking = async (blogObject) => {
@@ -138,13 +145,12 @@ const App = () => {
       <LoggedInHeader user={user} handleLogout={handleLogout} />
       <Notification/>
       <BlogsForm
-        blogs={blogs}
         handleLiking={handleLiking}
         handleRemovingBlog={handleRemovingBlog}
         user={user}
       />
       <Togglable buttonLabel={'new note'} ref={addBlogFormRef}>
-        <AddBlogForm createBlog={addBlog} />
+        <AddBlogForm changeVisibility={(() => changeAddBlogFormsVisibility())} />
       </Togglable>
     </div>
   )
