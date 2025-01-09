@@ -7,13 +7,16 @@ import Notification from './components/Notification'
 import LoggedInHeader from './components/LoggedInHeader'
 import LoginForm from './components/LoginForm'
 import BlogsForm from './components/BlogsForm'
+import { useDispatch } from 'react-redux'
+import { setNotification } from './reducers/notificationReducer'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [message, setMessage] = useState({ text: null, type: 'error' })
+
+  const dispatch = useDispatch()
 
   const addBlogFormRef = useRef()
 
@@ -40,18 +43,12 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
-      setMessage({
+      dispatch(setNotification({
         text: `Logged in succesfully! Welcome to blogapp, ${user.name}`,
         type: 'confirm',
-      })
-      setTimeout(() => {
-        setMessage({ text: null, type: 'error' })
-      }, 5000)
+      }))
     } catch (exception) {
-      setMessage({ text: 'Wrong username or password', type: 'error' })
-      setTimeout(() => {
-        setMessage({ text: null, type: 'error' })
-      }, 5000)
+      dispatch(setNotification({ text: 'Wrong username or password', type: 'error' }))
     }
   }
 
@@ -60,13 +57,10 @@ const App = () => {
     window.localStorage.removeItem('loggedBlogAppUser')
     setUser(null)
 
-    setMessage({
+    dispatch(setNotification({
       text: `Logged out succesfully! Bye bye, ${usersName}!`,
       type: 'confirm',
-    })
-    setTimeout(() => {
-      setMessage({ text: null, type: 'error' })
-    }, 5000)
+    }))
   }
 
   const addBlog = async (blogObject) => {
@@ -79,18 +73,12 @@ const App = () => {
       const title = blogs[blogs.length - 1].title
       const author = blogs[blogs.length - 1].author
 
-      setMessage({ text: `${title} by ${author} added`, type: 'confirm' })
-      setTimeout(() => {
-        setMessage({ text: null, type: 'error' })
-      }, 5000)
+      dispatch(setNotification({ text: `${title} by ${author} added`, type: 'confirm' }))
     } catch (exception) {
-      setMessage({
+      dispatch(setNotification({
         text: 'Blog must have a title, author and url',
         type: 'error',
-      })
-      setTimeout(() => {
-        setMessage({ text: null, type: 'error' })
-      }, 5000)
+      }))
     }
   }
 
@@ -100,13 +88,10 @@ const App = () => {
       const blogs = await blogService.getAll()
       setBlogs(blogs)
     } catch (exception) {
-      setMessage({
+      dispatch(setNotification({
         text: 'Something went wrong when liking a blog',
         type: 'error',
-      })
-      setTimeout(() => {
-        setMessage({ text: null, type: 'error' })
-      }, 5000)
+      }))
     }
   }
 
@@ -120,29 +105,23 @@ const App = () => {
           `Remove blog ${blogObject.title} by ${blogObject.author}?`
         )
       ) {
-        setMessage({
+        dispatch(setNotification({
           text: `${blogObject.title} by ${blogObject.author} removed!`,
           type: 'confirm',
-        })
-        setTimeout(() => {
-          setMessage({ text: null, type: 'error' })
-        }, 5000)
+        }))
       }
     } catch (exception) {
-      setMessage({
+      dispatch(setNotification({
         text: `Unable to remove blog ${blogObject.title} by ${blogObject.author}`,
         type: 'error',
-      })
-      setTimeout(() => {
-        setMessage({ text: null, type: 'error' })
-      }, 5000)
+      }))
     }
   }
 
   if (user === null) {
     return (
       <div>
-        <Notification message={message} />
+        <Notification/>
         <LoginForm
           username={username}
           password={password}
@@ -157,7 +136,7 @@ const App = () => {
   return (
     <div>
       <LoggedInHeader user={user} handleLogout={handleLogout} />
-      <Notification message={message} />
+      <Notification/>
       <BlogsForm
         blogs={blogs}
         handleLiking={handleLiking}
