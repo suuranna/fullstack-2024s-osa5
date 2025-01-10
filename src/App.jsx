@@ -8,13 +8,52 @@ import LoginForm from './components/LoginForm'
 import BlogsForm from './components/BlogsForm'
 import { useDispatch, useSelector } from 'react-redux'
 import { initializeBlogs } from './reducers/blogsReducer'
-import { setUser } from './reducers/userReducer'
 import { initializeUsers } from './reducers/usersReducer'
+import { setUser } from './reducers/userReducer'
 import UsersList from './components/UsersList'
 import {
   BrowserRouter as Router,
-  Routes, Route, Link, useNavigate, Navigate
+  Routes, Route, Link, useNavigate, Navigate, useParams
 } from 'react-router-dom'
+
+const User = ({ user }) => {
+  if (!user) {
+    return null
+  }
+  return (
+    <div>
+      <h2>{user.name}</h2>
+      <h3>added blogs</h3>
+      {user.blogs.map((blog) => {
+        <li>{blog.title}</li>
+      })}
+    </div>
+  )
+}
+
+const UserPage = () => {
+  const users = useSelector(state => state.users)
+  //console.log(users)
+  const id = useParams().id
+  const user = users.find(user => user.id === id)
+  //console.log(user.blogs)
+
+  if (!user) {
+    return null
+  }
+
+  return (
+    <div>
+      <h2>blogs</h2>
+      <LoggedInHeader/>
+      <h2>{user.name}</h2>
+      <h3>added blogs</h3>
+      {user.blogs.map((blog) => 
+        <li key={blog.id}>{blog.title}</li>
+      )}
+    </div>
+  )
+}
 
 const FrontPage = () => {
   const addBlogFormRef = useRef()
@@ -62,6 +101,7 @@ const App = () => {
   useEffect(() => {
     //blogService.getAll().then((blogs) => setBlogs(blogs))
     dispatch(initializeBlogs())
+    dispatch(initializeUsers())
     //dispatch(initializeUsers())
   }, [])
 
@@ -89,6 +129,7 @@ const App = () => {
         <Route path='/' element={user ? <FrontPage/> : <Navigate replace to='/login'/>}/>
         <Route path='/login' element={!user ? <LoginPage/> : <Navigate replace to='/'/>}/>
         <Route path='/users' element={<UsersPage/>} />
+        <Route path='/users/:id' element={<UserPage/>} />
       </Routes>
     </Router>
   )
