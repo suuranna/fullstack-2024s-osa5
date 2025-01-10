@@ -36,19 +36,6 @@ const App = () => {
     addBlogFormRef.current.toggleVisibility()
   }
 
-  const handleLiking = async (blogObject) => {
-    try {
-      await blogService.updateBlogLikes(blogObject)
-      const blogs = await blogService.getAll()
-      setBlogs(blogs)
-    } catch (exception) {
-      dispatch(setNotification({
-        text: 'Something went wrong when liking a blog',
-        type: 'error',
-      }))
-    }
-  }
-
   const handleRemovingBlog = async (blogObject) => {
     try {
       await blogService.removeBlog(blogObject.id)
@@ -86,7 +73,6 @@ const App = () => {
       <LoggedInHeader/>
       <Notification/>
       <BlogsForm
-        handleLiking={handleLiking}
         handleRemovingBlog={handleRemovingBlog}
         user={user}
       />

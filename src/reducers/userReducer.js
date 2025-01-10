@@ -20,7 +20,7 @@ export const loginUser = credentials => {
       const user = await loginService.login(credentials)
       window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
       blogService.setToken(user.token)
-      dispatch(setUser(user))
+      await dispatch(setUser(user))
     } catch (exception) {
       throw exception
     }

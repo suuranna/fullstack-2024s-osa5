@@ -14,8 +14,6 @@ const BlogsForm = (props) => {
         <Blog
           key={blog.id}
           blog={blog}
-          handleLiking={props.handleLiking}
-          user={props.user}
           handleRemovingBlog={props.handleRemovingBlog}
         />
       ))}
@@ -24,8 +22,8 @@ const BlogsForm = (props) => {
 }
 
 BlogsForm.propTypes = {
-  user: PropTypes.object.isRequired,
-  handleLiking: PropTypes.func.isRequired,
+  //user: PropTypes.object.isRequired,
+  //handleLiking: PropTypes.func.isRequired,
   handleRemovingBlog: PropTypes.func.isRequired
   //blogs: PropTypes.array.isRequired,
 }
