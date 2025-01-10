@@ -2,7 +2,7 @@ import Blog from './Blog'
 import PropTypes from 'prop-types'
 import { useSelector } from 'react-redux'
 
-const BlogsForm = (props) => {
+const BlogsForm = () => {
   const blogs = useSelector(state => state.blogs)
   const sortedBlogs = blogs.slice().sort(
     (blog1, blog2) => blog2.likes - blog1.likes
@@ -14,7 +14,6 @@ const BlogsForm = (props) => {
         <Blog
           key={blog.id}
           blog={blog}
-          handleRemovingBlog={props.handleRemovingBlog}
         />
       ))}
     </div>
@@ -24,7 +23,7 @@ const BlogsForm = (props) => {
 BlogsForm.propTypes = {
   //user: PropTypes.object.isRequired,
   //handleLiking: PropTypes.func.isRequired,
-  handleRemovingBlog: PropTypes.func.isRequired
+  //handleRemovingBlog: PropTypes.func.isRequired
   //blogs: PropTypes.array.isRequired,
 }
 

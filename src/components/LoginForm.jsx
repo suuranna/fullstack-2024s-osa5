@@ -3,10 +3,13 @@ import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { setNotification } from '../reducers/notificationReducer'
 import { loginUser } from '../reducers/userReducer'
+import { useNavigate } from 'react-router-dom'
 
 const LoginForm = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+
+  const navigate = useNavigate()
 
   const dispatch = useDispatch()
 
@@ -20,6 +23,7 @@ const LoginForm = () => {
       }))
       setUsername('')
       setPassword('')
+      navigate('/')
     } catch (exception) {
       dispatch(setNotification({ text: 'Wrong username or password', type: 'error' }))
     }

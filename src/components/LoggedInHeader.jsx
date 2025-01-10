@@ -18,6 +18,10 @@ const LoggedInHeader = () => {
       type: 'confirm',
     }))
   }
+  
+  if (user === null) {
+    return null
+  }
 
   return (
     <div>
