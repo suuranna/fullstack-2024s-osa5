@@ -1,19 +1,37 @@
 import PropTypes from 'prop-types'
+import { setNotification } from '../reducers/notificationReducer'
+import { setUser, getUsersName } from '../reducers/userReducer'
+import { useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 
-const LoggedInHeader = (props) => {
+const LoggedInHeader = () => {
+  const user = useSelector(state => state.user)
+  const dispatch = useDispatch()
+
+  const logout = () => {
+    const usersName = user.name
+    window.localStorage.removeItem('loggedBlogAppUser')
+    dispatch(setUser(null))
+
+    dispatch(setNotification({
+      text: `Logged out succesfully! Bye bye, ${usersName}!`,
+      type: 'confirm',
+    }))
+  }
+
   return (
     <div>
       <p>
-        {props.user.name} logged in{' '}
-        <button onClick={props.handleLogout}>logout</button>{' '}
+        {user.name} logged in{' '}
+        <button onClick={logout}>logout</button>
       </p>
     </div>
   )
 }
 
-LoggedInHeader.propTypes = {
+/*LoggedInHeader.propTypes = {
   handleLogout: PropTypes.func.isRequired,
   user: PropTypes.object.isRequired,
-}
+}*/
 
 export default LoggedInHeader

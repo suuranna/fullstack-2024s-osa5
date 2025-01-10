@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
 import { createBlog } from '../reducers/blogsReducer'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { setNotification } from '../reducers/notificationReducer'
 
 const AddBlogForm = ({ changeVisibility }) => {
@@ -10,40 +10,31 @@ const AddBlogForm = ({ changeVisibility }) => {
   const [url, setUrl] = useState('')
 
   const dispatch = useDispatch()
+  const user = useSelector(state => state.user)
 
-  const addBlog = (event) => {
+  const addBlog = async (event) => {
     event.preventDefault()
 
     const newBlog = {
       title: title,
       author: author,
       url: url,
+      user: user
     }
 
-    changeVisibility()
-
     try {
-      dispatch(createBlog(newBlog))
-          //await blogService.addBlog(blogObject)
-          //const blogs = await blogService.getAll()
-          //setBlogs(blogs)
-      //addBlogFormRef.current.toggleVisibility()
-      //changeVisibility()
-          //const title = blogs[blogs.length - 1].title
-          //const author = blogs[blogs.length - 1].author
-    
+      await dispatch(createBlog(newBlog))
       dispatch(setNotification({ text: `${title} by ${author} added`, type: 'confirm' }))
       setTitle('')
       setAuthor('')
       setUrl('')
+      changeVisibility()
     } catch (exception) {
       dispatch(setNotification({
         text: 'Blog must have a title, author and url',
         type: 'error',
       }))
     }
-
-    //dispatch(createBlog(newBlog))
   }
 
   return (
